@@ -21,7 +21,7 @@ public class AccountPayableService {
     }
 
     public List<AccountsPayable> save(List<AccountsPayable> accountsPayable) {
-        //validateAccountsPayable(accountsPayable);
+        accountsPayable.forEach(this::validateAccountsPayable);
         return accountsPayableRepository.saveAll(accountsPayable);
     }
 
