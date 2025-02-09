@@ -3,6 +3,9 @@ package com.totvs.accounts.application.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.totvs.accounts.domain.entity.AccountsPayable;
 import com.totvs.accounts.domain.repository.AccountsPayableRepository;
@@ -47,15 +50,16 @@ public class AccountPayableService {
         return accountsPayableRepository.save(existingAccountsPayable);
     }
 
-    public List<AccountsPayable> getAccountsPayable(LocalDate dueDate, String description) {
+    public Page<AccountsPayable> getAccountsPayable(LocalDate dueDate, String description, Pageable pageable) {
         if (dueDate != null && description != null) {
-            return accountsPayableRepository.findAccountsPayableByDueDateAndDescriptionContaining(dueDate, description);
+            return accountsPayableRepository.findAccountsPayableByDueDateAndDescriptionContaining(dueDate, description,
+                    pageable);
         } else if (dueDate != null) {
-            return accountsPayableRepository.findAccountsPayableByDueDate(dueDate);
+            return accountsPayableRepository.findAccountsPayableByDueDate(dueDate, pageable);
         } else if (description != null) {
-            return accountsPayableRepository.findAccountsPayableByDescriptionContaining(description);
+            return accountsPayableRepository.findAccountsPayableByDescriptionContaining(description, pageable);
         }
-        return accountsPayableRepository.findAll();
+        return accountsPayableRepository.findAll(pageable);
     }
 
     public AccountsPayable getAccountsPayableById(Long id) throws EntityNotFoundException {

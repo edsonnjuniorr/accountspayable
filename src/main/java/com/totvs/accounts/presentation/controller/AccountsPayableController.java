@@ -9,6 +9,9 @@ import com.totvs.accounts.presentation.dto.AccountsPayableTotalPaidResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,10 +45,10 @@ public class AccountsPayableController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<AccountsPayable>> getAccountsPayable(@RequestParam(required = false) LocalDate dueDate,
-			@RequestParam(required = false) String description) {
+	public ResponseEntity<Page<AccountsPayable>> getAccountsPayable(@RequestParam(required = false) LocalDate dueDate,
+			@RequestParam(required = false) String description, Pageable pageable) {
 		log.info("GET /accountspayable chamado com dueDate: {} e description: {}", dueDate, description);
-		List<AccountsPayable> accounts = accountPayableService.getAccountsPayable(dueDate, description);
+		Page<AccountsPayable> accounts = accountPayableService.getAccountsPayable(dueDate, description, pageable);
 		return ResponseEntity.ok(accounts);
 	}
 

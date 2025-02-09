@@ -29,7 +29,7 @@ Authorization: ApiKey 123456789
 
 ---
 
-### 2. Listar Contas a Pagar
+### 2. Listar Contas a Pagar (com Paginação)
 
 **Endpoint:**
 ```
@@ -39,14 +39,41 @@ GET /accountspayable
 **Parâmetros:**
 - `dueDate` (Query, LocalDate) - Opcional: Filtra pelo vencimento.
 - `description` (Query, String) - Opcional: Filtra pela descrição.
+- `page` (Query, Integer) - Opcional: Número da página (começando em 0). Valor padrão: `0`.
+- `size` (Query, Integer) - Opcional: Quantidade de registros por página. Valor padrão: `10`.
+- `sort` (Query, String) - Opcional: Campo para ordenação (exemplo: `dueDate,desc`).
 
 **Resposta:**
-- `200 OK`: Retorna uma lista de contas a pagar.
+- `200 OK`: Retorna uma página de contas a pagar no formato paginado.
 
 **Exemplo de requisição:**
 ```
-GET /accountspayable?dueDate=2023-12-01&description=Aluguel
+GET /accountspayable?page=0&size=10&sort=dueDate,desc
 Authorization: ApiKey 123456789
+```
+
+**Exemplo de resposta:**
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "description": "Aluguel",
+      "amount": 1500.00,
+      "dueDate": "2023-12-01"
+    },
+    {
+      "id": 2,
+      "description": "Energia",
+      "amount": 500.00,
+      "dueDate": "2023-12-10"
+    }
+  ],
+  "totalElements": 50,
+  "totalPages": 5,
+  "size": 10,
+  "number": 0
+}
 ```
 
 ---
@@ -71,124 +98,3 @@ GET /accountspayable/total-paid?startDate=2023-01-01&endDate=2023-12-31
 Authorization: ApiKey 123456789
 ```
 
----
-
-### 4. Criar Conta a Pagar
-
-**Endpoint:**
-```
-POST /accountspayable
-```
-
-**Corpo da requisição (JSON):**
-```json
-{
-  "description": "Aluguel",
-  "amount": 1500.00,
-  "dueDate": "2023-12-01"
-}
-```
-
-**Resposta:**
-- `201 Created`: Retorna a conta criada.
-
-**Exemplo de requisição:**
-```
-POST /accountspayable
-Authorization: ApiKey 123456789
-Content-Type: application/json
-
-{
-  "description": "Aluguel",
-  "amount": 1500.00,
-  "dueDate": "2023-12-01"
-}
-```
-
----
-
-### 5. Atualizar Conta a Pagar
-
-**Endpoint:**
-```
-PUT /accountspayable/{id}
-```
-
-**Parâmetros:**
-- `id` (Path Variable, Long): ID da conta a pagar.
-
-**Corpo da requisição (JSON):**
-```json
-{
-  "description": "Energia",
-  "amount": 500.00,
-  "dueDate": "2023-12-10"
-}
-```
-
-**Resposta:**
-- `200 OK`: Retorna a conta atualizada.
-
-**Exemplo de requisição:**
-```
-PUT /accountspayable/1
-Authorization: ApiKey 123456789
-Content-Type: application/json
-
-{
-  "description": "Energia",
-  "amount": 500.00,
-  "dueDate": "2023-12-10"
-}
-```
-
----
-
-### 6. Atualizar Status da Conta
-
-**Endpoint:**
-```
-PATCH /accountspayable/{id}/status
-```
-
-**Parâmetros:**
-- `id` (Path Variable, Long): ID da conta a pagar.
-- `status` (Query, String): Novo status da conta.
-
-**Resposta:**
-- `200 OK`: Retorna a conta com o status atualizado.
-
-**Exemplo de requisição:**
-```
-PATCH /accountspayable/1/status?status=PAID
-Authorization: ApiKey 123456789
-```
-
----
-
-### 7. Upload de CSV
-
-**Endpoint:**
-```
-POST /accountspayable/upload
-```
-
-**Parâmetros:**
-- `file` (FormData, MultipartFile): Arquivo CSV contendo contas a pagar.
-
-**Resposta:**
-- `200 OK`: Retorna uma lista das contas inseridas.
-
-**Exemplo de requisição:**
-```
-POST /accountspayable/upload
-Authorization: ApiKey 123456789
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
-
-------WebKitFormBoundary
-Content-Disposition: form-data; name="file"; filename="contas.csv"
-Content-Type: text/csv
-
-(dados do arquivo CSV)
-
-------WebKitFormBoundary--
